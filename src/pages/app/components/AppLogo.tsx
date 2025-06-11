@@ -1,20 +1,22 @@
 import * as React from 'react';
-import {Image, StyleSheet} from 'react-native';
-import {Card, Text} from 'react-native-paper';
+import {Image, StyleSheet, View} from 'react-native';
+import {Text} from 'react-native-paper';
+import {useTheme} from '@/theme';
+import FastImage from 'react-native-fast-image';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const MAX_IMAGE_SIZE = 100;
+const ICON_SIZE = 56;
 
 /******************************************************************************
  *                                   UTILS                                    *
  ******************************************************************************/
 
 const calculateImageSize = (width: number, height: number) => ({
-  width: MAX_IMAGE_SIZE * (width / height),
-  height: MAX_IMAGE_SIZE,
+  width: ICON_SIZE * (width / height),
+  height: ICON_SIZE,
 });
 
 /******************************************************************************
@@ -23,21 +25,18 @@ const calculateImageSize = (width: number, height: number) => ({
 
 const useAppLogo = (title: string, icon: string) => {
   const [imageSize, setImageSize] = React.useState({
-    width: MAX_IMAGE_SIZE,
-    height: MAX_IMAGE_SIZE,
+    width: ICON_SIZE,
+    height: ICON_SIZE,
   });
+  const {schemedTheme} = useTheme();
 
   React.useEffect(() => {
-    Image.getSize(icon, (width, height) =>
-      setImageSize(calculateImageSize(width, height)),
-    );
+    Image.getSize(icon, (width: number, height: number) => {
+      setImageSize(calculateImageSize(width, height));
+    });
   }, [icon]);
 
-  const paddingHorizontal = React.useMemo(
-    () => (title.length > 15 ? 40 : 50),
-    [title],
-  );
-  return {imageSize, paddingHorizontal};
+  return {imageSize, schemedTheme};
 };
 
 /******************************************************************************
@@ -50,19 +49,33 @@ interface AppLogoProps {
 }
 
 const AppLogo = ({title, icon}: AppLogoProps) => {
-  const {imageSize, paddingHorizontal} = useAppLogo(title, icon);
+  const {imageSize, schemedTheme} = useAppLogo(title, icon);
 
   return (
-    <Card contentStyle={[styles.card, {paddingHorizontal}]}>
-      <Card.Cover
-        resizeMode="contain"
-        style={[styles.cardCover, imageSize]}
-        source={{uri: icon}}
-      />
-      <Text style={styles.cardText} variant="headlineLarge">
-        {title}
-      </Text>
-    </Card>
+    <View style={styles.container}>
+      {/* App Icon */}
+      <View
+        style={[
+          styles.iconContainer,
+          {backgroundColor: schemedTheme.surfaceContainerHigh},
+        ]}>
+        <FastImage
+          resizeMode={FastImage.resizeMode.contain}
+          style={[styles.appIcon, imageSize]}
+          source={{uri: icon}}
+        />
+      </View>
+
+      {/* App Title */}
+      <View style={styles.detailsContainer}>
+        <Text
+          style={[styles.appTitle, {color: schemedTheme.onSurface}]}
+          variant="headlineSmall"
+          numberOfLines={1}>
+          {title}
+        </Text>
+      </View>
+    </View>
   );
 };
 
@@ -71,20 +84,35 @@ const AppLogo = ({title, icon}: AppLogoProps) => {
  ******************************************************************************/
 
 const styles = StyleSheet.create({
-  card: {
-    width: '100%',
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  iconContainer: {
+    width: ICON_SIZE + 8,
+    height: ICON_SIZE + 8,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'column',
-    padding: 30,
-    paddingBottom: 20,
-    gap: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  cardCover: {
-    backgroundColor: 'transparent',
+  appIcon: {
+    borderRadius: 12,
   },
-  cardText: {
-    textAlign: 'center',
+  detailsContainer: {
+    flex: 1,
+  },
+  appTitle: {
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });
 
@@ -92,5 +120,4 @@ const styles = StyleSheet.create({
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-// export default AppLogo;
 export default React.memo(AppLogo);
