@@ -14,29 +14,14 @@ const ICON_SIZE = 56;
  *                                   UTILS                                    *
  ******************************************************************************/
 
-const calculateImageSize = (width: number, height: number) => ({
-  width: ICON_SIZE * (width / height),
-  height: ICON_SIZE,
-});
-
 /******************************************************************************
  *                                    HOOK                                    *
  ******************************************************************************/
 
 const useAppLogo = (title: string, icon: string) => {
-  const [imageSize, setImageSize] = React.useState({
-    width: ICON_SIZE,
-    height: ICON_SIZE,
-  });
   const {schemedTheme} = useTheme();
 
-  React.useEffect(() => {
-    Image.getSize(icon, (width: number, height: number) => {
-      setImageSize(calculateImageSize(width, height));
-    });
-  }, [icon]);
-
-  return {imageSize, schemedTheme};
+  return {schemedTheme};
 };
 
 /******************************************************************************
@@ -49,7 +34,7 @@ interface AppLogoProps {
 }
 
 const AppLogo = ({title, icon}: AppLogoProps) => {
-  const {imageSize, schemedTheme} = useAppLogo(title, icon);
+  const {schemedTheme} = useAppLogo(title, icon);
 
   return (
     <View style={styles.container}>
@@ -60,8 +45,8 @@ const AppLogo = ({title, icon}: AppLogoProps) => {
           {backgroundColor: schemedTheme.surfaceContainerHigh},
         ]}>
         <FastImage
-          resizeMode={FastImage.resizeMode.contain}
-          style={[styles.appIcon, imageSize]}
+          resizeMode={FastImage.resizeMode.cover}
+          style={styles.appIcon}
           source={{uri: icon}}
         />
       </View>
@@ -103,8 +88,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    overflow: 'hidden',
   },
   appIcon: {
+    width: ICON_SIZE,
+    height: ICON_SIZE,
     borderRadius: 12,
   },
   detailsContainer: {

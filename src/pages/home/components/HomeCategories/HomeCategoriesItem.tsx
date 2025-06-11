@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useIndex} from '@/states/fetched';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Text} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from '@/types/navigation';
@@ -49,11 +49,13 @@ const HomeCategoriesItem = ({app}: HomeItemProps) => {
       onPress={handleOnPress}
       style={styles.container}
       activeOpacity={0.6}>
-      <FastImage
-        resizeMode="contain"
-        style={styles.appIcon}
-        source={{uri: appData.icon}}
-      />
+      <View style={styles.iconContainer}>
+        <FastImage
+          resizeMode="cover"
+          style={styles.appIcon}
+          source={{uri: appData.icon}}
+        />
+      </View>
 
       <Text
         variant="bodyMedium"
@@ -75,6 +77,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     gap: 12,
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   appIcon: {
     width: 32,
