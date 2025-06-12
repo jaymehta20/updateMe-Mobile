@@ -41,7 +41,7 @@ function useAppInfoButton(currApp: CurrAppProps) {
       };
     }
     return {
-      icon: 'open-in-app',
+      icon: 'launch',
       label: translations['Open'],
       action: () => AppsModule.openApp(currApp.defaultProvider.packageName),
       mode: 'contained-tonal' as const,
